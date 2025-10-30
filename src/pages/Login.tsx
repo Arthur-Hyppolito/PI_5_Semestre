@@ -13,7 +13,9 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [loginType, setLoginType] = useState<'cliente' | 'gerencial' | null>(null);
+  const [loginType, setLoginType] = useState<"cliente" | "gerencial" | null>(
+    null
+  );
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -23,7 +25,7 @@ const Login = () => {
 
     try {
       const { data, error } = await auth.signIn(email, password);
-      
+
       if (error) {
         toast({
           title: "Erro no login",
@@ -38,22 +40,24 @@ const Login = () => {
           title: "Login realizado com sucesso!",
           description: "Redirecionando...",
         });
-        
+
         // Redirecionar baseado no tipo de usuário
-        if (loginType === 'cliente') {
-          navigate('/')
+        if (loginType === "cliente") {
+          navigate("/");
         } else {
           // Verificar se é admin
-          const isUserAdmin = await auth.isAdmin(data.user.id)
+          const isUserAdmin = await auth.isAdmin(data.user.id);
+
           if (isUserAdmin) {
-            navigate('/backoffice')
+            navigate("/backoffice");
           } else {
             toast({
               title: "Acesso negado",
-              description: "Você não tem permissão para acessar a área gerencial.",
+              description:
+                "Você não tem permissão para acessar a área gerencial.",
               variant: "destructive",
-            })
-            return
+            });
+            return;
           }
         }
       }
@@ -75,7 +79,10 @@ const Login = () => {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="text-center mb-8">
-            <Link to="/" className="inline-flex items-center space-x-2 text-white hover:text-ocean-light transition-colors">
+            <Link
+              to="/"
+              className="inline-flex items-center space-x-2 text-white hover:text-ocean-light transition-colors"
+            >
               <Waves className="h-10 w-10" />
               <span className="text-2xl font-bold">WaveSurf</span>
             </Link>
@@ -93,33 +100,40 @@ const Login = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <Button
-                onClick={() => setLoginType('cliente')}
+                onClick={() => setLoginType("cliente")}
                 variant="outline"
                 className="w-full h-16 flex items-center justify-center space-x-3 hover:bg-ocean-light/10 hover:border-ocean-medium transition-all"
               >
                 <Users className="h-6 w-6 text-ocean-medium" />
                 <div className="text-left">
                   <div className="font-semibold text-lg">Cliente</div>
-                  <div className="text-sm text-muted-foreground">Acesso à loja e pedidos</div>
+                  <div className="text-sm text-muted-foreground">
+                    Acesso à loja e pedidos
+                  </div>
                 </div>
               </Button>
 
               <Button
-                onClick={() => setLoginType('gerencial')}
+                onClick={() => setLoginType("gerencial")}
                 variant="outline"
                 className="w-full h-16 flex items-center justify-center space-x-3 hover:bg-ocean-light/10 hover:border-ocean-medium transition-all"
               >
                 <Shield className="h-6 w-6 text-ocean-medium" />
                 <div className="text-left">
                   <div className="font-semibold text-lg">Área Gerencial</div>
-                  <div className="text-sm text-muted-foreground">Painel administrativo</div>
+                  <div className="text-sm text-muted-foreground">
+                    Painel administrativo
+                  </div>
                 </div>
               </Button>
             </CardContent>
           </Card>
 
           <div className="text-center mt-6">
-            <Link to="/" className="text-white/80 hover:text-white transition-colors">
+            <Link
+              to="/"
+              className="text-white/80 hover:text-white transition-colors"
+            >
               ← Voltar ao site
             </Link>
           </div>
@@ -133,7 +147,10 @@ const Login = () => {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center space-x-2 text-white hover:text-ocean-light transition-colors">
+          <Link
+            to="/"
+            className="inline-flex items-center space-x-2 text-white hover:text-ocean-light transition-colors"
+          >
             <Waves className="h-10 w-10" />
             <span className="text-2xl font-bold">WaveSurf</span>
           </Link>
@@ -152,7 +169,7 @@ const Login = () => {
                 ← Voltar
               </Button>
               <div className="flex items-center space-x-2">
-                {loginType === 'cliente' ? (
+                {loginType === "cliente" ? (
                   <Users className="h-5 w-5 text-ocean-medium" />
                 ) : (
                   <Shield className="h-5 w-5 text-ocean-medium" />
@@ -160,13 +177,12 @@ const Login = () => {
               </div>
             </div>
             <CardTitle className="text-2xl font-bold text-center bg-gradient-ocean bg-clip-text text-transparent">
-              {loginType === 'cliente' ? 'Acesso do Cliente' : 'Área Gerencial'}
+              {loginType === "cliente" ? "Acesso do Cliente" : "Área Gerencial"}
             </CardTitle>
             <p className="text-center text-muted-foreground">
-              {loginType === 'cliente' 
-                ? 'Acesse sua conta para fazer pedidos' 
-                : 'Acesse o painel administrativo'
-              }
+              {loginType === "cliente"
+                ? "Acesse sua conta para fazer pedidos"
+                : "Acesse o painel administrativo"}
             </p>
           </CardHeader>
           <CardContent>
@@ -212,7 +228,12 @@ const Login = () => {
                 </div>
               </div>
 
-              <Button type="submit" variant="ocean" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                variant="ocean"
+                className="w-full"
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -227,40 +248,54 @@ const Login = () => {
             <div className="mt-6 text-center space-y-2">
               <p className="text-sm text-muted-foreground">
                 Esqueceu sua senha?{" "}
-                <a href="#" className="text-ocean-medium hover:text-ocean-deep transition-colors">
+                <a
+                  href="#"
+                  className="text-ocean-medium hover:text-ocean-deep transition-colors"
+                >
                   Recuperar acesso
                 </a>
               </p>
               <p className="text-sm text-muted-foreground">
                 Não tem uma conta?{" "}
-                <Link to="/register" className="text-ocean-medium hover:text-ocean-deep transition-colors font-medium">
+                <Link
+                  to="/register"
+                  className="text-ocean-medium hover:text-ocean-deep transition-colors font-medium"
+                >
                   Criar conta
                 </Link>
               </p>
             </div>
 
-            {loginType === 'gerencial' && (
+            {loginType === "gerencial" && (
               <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-700 text-center font-medium mb-2">
                   <strong>🔐 Credenciais de Administrador</strong>
                 </p>
                 <div className="text-xs text-blue-600 space-y-1">
-                  <p><strong>Email:</strong> admin@wavecraft.com</p>
-                  <p><strong>Senha:</strong> Admin123!</p>
+                  <p>
+                    <strong>Email:</strong> admin@admin.com
+                  </p>
+                  <p>
+                    <strong>Senha:</strong> 123321
+                  </p>
                 </div>
               </div>
             )}
 
             <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
               <p className="text-sm text-green-700 text-center">
-                <strong>✅ Supabase Configurado!</strong> O sistema de autenticação está ativo.
+                <strong>✅ Supabase Configurado!</strong> O sistema de
+                autenticação está ativo.
               </p>
             </div>
           </CardContent>
         </Card>
 
         <div className="text-center mt-6">
-          <Link to="/" className="text-white/80 hover:text-white transition-colors">
+          <Link
+            to="/"
+            className="text-white/80 hover:text-white transition-colors"
+          >
             ← Voltar ao site
           </Link>
         </div>
