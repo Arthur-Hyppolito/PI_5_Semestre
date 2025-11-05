@@ -10,7 +10,7 @@ interface Produto {
   id: string;
   nome: string;
   descricao: string;
-  preco: number;
+  preco_unitario: number;
   quantidade: number;
   categoria: string;
   imagem_url?: string;
@@ -124,7 +124,7 @@ const ProductDetail = ({ product, isOpen, onClose }: ProductDetailProps) => {
             {/* Price */}
             <div className="space-y-2">
               <div className="text-3xl font-bold text-ocean-deep">
-                R$ {product.preco.toFixed(2)}
+                R$ {product.preco_unitario.toFixed(2)}
               </div>
               <div className="text-sm text-muted-foreground">
                 À vista no PIX ou em até 12x sem juros

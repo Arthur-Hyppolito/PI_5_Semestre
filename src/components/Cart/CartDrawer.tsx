@@ -1,8 +1,10 @@
 import React from 'react';
 import { X, Plus, Minus, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/hooks/use-toast';
 import surfboardsImage from '@/assets/surfboards.jpg';
 
 interface CartDrawerProps {
@@ -11,19 +13,37 @@ interface CartDrawerProps {
 }
 
 const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
-  const { state, removeItem, updateQuantity, clearCart } = useCart();
+  const { state, removeItem, updateQuantity, clearCart, isLoading } = useCart();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleQuantityChange = (id: string, newQuantity: number) => {
+  const handleQuantityChange = async (id: string, newQuantity: number) => {
     if (newQuantity <= 0) {
-      removeItem(id);
-    } else {
-      updateQuantity(id, newQuantity);
+      await removeItem(id);
+      return;
     }
+
+    // Validar estoque antes de atualizar
+    const item = state.items.find(i => i.produto.id === id);
+    if (!item) return;
+
+    // Verificar se nova quantidade excede estoque disponível
+    if (newQuantity > item.produto.quantidade_estoque) {
+      toast({
+        title: "Estoque insuficiente",
+        description: `Apenas ${item.produto.quantidade_estoque} unidades disponíveis.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    await updateQuantity(id, newQuantity);
   };
 
   const handleCheckout = () => {
-    // TODO: Implementar lógica de checkout
-    alert('Funcionalidade de checkout será implementada em breve!');
+    // Fechar drawer e navegar para página de checkout
+    onClose();
+    navigate('/carrinho');
   };
 
   if (!isOpen) return null;
@@ -89,7 +109,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                           {/* Price and Quantity Controls */}
                           <div className="flex items-center justify-between">
                             <span className="font-bold text-ocean-medium">
-                              R$ {(item.produto.preco * item.quantidade).toFixed(2)}
+                              R$ {(item.produto.preco_unitario * item.quantidade).toFixed(2)}
                             </span>
                             
                             <div className="flex items-center gap-2">
@@ -98,6 +118,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                                 size="sm"
                                 className="h-6 w-6 p-0"
                                 onClick={() => handleQuantityChange(item.produto.id, item.quantidade - 1)}
+                                disabled={isLoading}
                               >
                                 <Minus className="h-3 w-3" />
                               </Button>
@@ -111,7 +132,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                                 size="sm"
                                 className="h-6 w-6 p-0"
                                 onClick={() => handleQuantityChange(item.produto.id, item.quantidade + 1)}
-                                disabled={item.quantidade >= item.produto.quantidade}
+                                disabled={item.quantidade >= item.produto.quantidade_estoque || isLoading}
                               >
                                 <Plus className="h-3 w-3" />
                               </Button>
@@ -121,6 +142,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                                 size="sm"
                                 className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
                                 onClick={() => removeItem(item.produto.id)}
+                                disabled={isLoading}
                               >
                                 <Trash2 className="h-3 w-3" />
                               </Button>
@@ -129,7 +151,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                           
                           {/* Unit Price */}
                           <p className="text-xs text-gray-400 mt-1">
-                            R$ {item.produto.preco.toFixed(2)} cada
+                            R$ {item.produto.preco_unitario.toFixed(2)} cada
                           </p>
                         </div>
                       </div>

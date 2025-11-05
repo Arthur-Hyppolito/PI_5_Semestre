@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase, getClientProfile, auth } from "@/lib/supabase";
 import { CartIcon } from "@/components/Cart";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/contexts/CartContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,6 +14,7 @@ const Header = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { hasPendingOperations } = useCart();
 
   // Teste básico do console
 
@@ -27,35 +29,39 @@ const Header = () => {
     // Verificar usuário atual
     const checkUser = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         setUser(user);
-        
+
         if (user) {
-          const result = await getClientProfile(user.id) as any;
+          const result = (await getClientProfile(user.id)) as any;
           setClientProfile(result.data);
         }
       } catch (err) {
-        console.error('Header - Erro ao verificar usuário:', err);
+        console.error("Header - Erro ao verificar usuário:", err);
       }
     };
 
     checkUser();
 
     // Escutar mudanças de autenticação
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user || null);
-      
+
       if (session?.user) {
         // Usar dados do user_metadata imediatamente como fallback
         const fallbackProfile = {
-          nome: session.user.user_metadata?.nome || 'Cliente',
-          sobrenome: session.user.user_metadata?.sobrenome || '',
-          email: session.user.email || ''
+          nome: session.user.user_metadata?.nome || "Cliente",
+          sobrenome: session.user.user_metadata?.sobrenome || "",
+          email: session.user.email || "",
         };
         setClientProfile(fallbackProfile);
-        
+
         // Buscar perfil completo em background
-        const result = await getClientProfile(session.user.id) as any;
+        const result = (await getClientProfile(session.user.id)) as any;
         if (result.data && !result.error) {
           setClientProfile(result.data);
         }
@@ -70,39 +76,49 @@ const Header = () => {
   }, []);
 
   const handleUserClick = () => {
-    navigate('/perfil');
+    navigate("/perfil");
   };
 
   // Nova função de logout robusta
   const handleLogout = async () => {
+    // ✅ CORREÇÃO ERRO #10: Verificar operações pendentes antes de logout
+    if (hasPendingOperations) {
+      const confirmLogout = window.confirm(
+        "Você tem operações em andamento. Se sair agora, elas serão canceladas. Deseja continuar?"
+      );
+
+      if (!confirmLogout) {
+        return; // Usuário cancelou logout
+      }
+    }
+
     if (isLoggingOut) return; // Previne múltiplos cliques
-    
+
     setIsLoggingOut(true);
-    
+
     try {
       // Usar a nova função de logout
       const result = await auth.performLogout();
-      
+
       if (result.success) {
         // Limpar estados locais
         setUser(null);
         setClientProfile(null);
-        
+
         // Mostrar mensagem de sucesso
         toast({
           title: "Logout realizado",
           description: result.message,
           variant: "default",
         });
-        
+
         // Redirecionar para home
-        navigate('/', { replace: true });
-        
+        navigate("/", { replace: true });
+
         // Forçar reload da página para garantir limpeza completa
         setTimeout(() => {
-          window.location.href = '/';
+          window.location.href = "/";
         }, 500);
-        
       } else {
         // Mostrar erro
         toast({
@@ -112,16 +128,16 @@ const Header = () => {
         });
       }
     } catch (error) {
-      console.error('Erro crítico no logout:', error);
+      console.error("Erro crítico no logout:", error);
       toast({
         title: "Erro crítico",
         description: "Falha crítica no logout. Recarregando página...",
         variant: "destructive",
       });
-      
+
       // Em caso de erro crítico, forçar reload
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = "/";
       }, 1000);
     } finally {
       setIsLoggingOut(false);
@@ -151,10 +167,10 @@ const Header = () => {
                 {item.name}
               </a>
             ))}
-            
+
             {/* Cart Icon */}
             <CartIcon />
-            
+
             {user ? (
               <div className="flex items-center space-x-3">
                 <Button
@@ -164,7 +180,7 @@ const Header = () => {
                   className="flex items-center space-x-2 hover:bg-ocean-light/10"
                 >
                   <User className="h-4 w-4" />
-                  <span>{clientProfile?.nome || 'Usuário'}</span>
+                  <span>{clientProfile?.nome || "Usuário"}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -214,12 +230,12 @@ const Header = () => {
                   {item.name}
                 </a>
               ))}
-              
+
               {/* Mobile Cart Icon */}
               <div className="px-3 py-2">
                 <CartIcon />
               </div>
-              
+
               <div className="px-3 py-2">
                 {user ? (
                   <div className="space-y-2">
@@ -230,7 +246,7 @@ const Header = () => {
                       className="w-full flex items-center space-x-2 justify-start"
                     >
                       <User className="h-4 w-4" />
-                      <span>{clientProfile?.nome || 'Usuário'}</span>
+                      <span>{clientProfile?.nome || "Usuário"}</span>
                     </Button>
                     <Button
                       variant="outline"

@@ -251,6 +251,18 @@ export default function GerenciarProdutos() {
         return
       }
       
+      // ✅ Verificar se é admin
+      const isUserAdmin = await auth.isAdmin(user.id)
+      if (!isUserAdmin) {
+        toast({
+          title: "Acesso negado",
+          description: "Você não tem permissão para gerenciar produtos.",
+          variant: "destructive",
+        })
+        navigate('/backoffice')
+        return
+      }
+      
       setUser(user)
     } catch (error) {
       navigate('/login')
@@ -877,12 +889,28 @@ export default function GerenciarProdutos() {
         console.error('Erro ao verificar carrinhos:', carrinhoError)
       }
 
-      // Se está em carrinhos, avisar mas permitir exclusão
+      // 🆕 Se está em carrinhos, remover primeiro
       if (carrinhos && carrinhos.length > 0) {
         toast({
-          title: "Aviso",
-          description: "Este produto está em carrinhos de compra. A exclusão removerá o produto desses carrinhos.",
+          title: "Removendo dos carrinhos...",
+          description: "Este produto está em carrinhos de compra. Removendo antes de excluir.",
         })
+        
+        // Remover produto de todos os carrinhos
+        const { error: removeCarrinhoError } = await supabase
+          .from('carrinho_itens')
+          .delete()
+          .eq('produto_id', productToDelete.id)
+        
+        if (removeCarrinhoError) {
+          console.error('Erro ao remover produto dos carrinhos:', removeCarrinhoError)
+          toast({
+            title: "Erro",
+            description: "Não foi possível remover o produto dos carrinhos.",
+            variant: "destructive",
+          })
+          throw removeCarrinhoError
+        }
       }
 
       // Produto pode ser excluído

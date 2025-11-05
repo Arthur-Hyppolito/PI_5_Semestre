@@ -6,16 +6,17 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Camera, Save, User, MapPin, Mail, Phone, Calendar, ArrowLeft } from 'lucide-react'
+import { Camera, Save, User as UserIcon, MapPin, Mail, Phone, Calendar, ArrowLeft } from 'lucide-react'
 import { useNavigate, Link } from 'react-router-dom'
 import { auth, supabase } from '@/lib/supabase'
 import { useToast } from '@/hooks/use-toast'
 import Sidebar from '@/components/Sidebar'
+import type { User } from '@supabase/supabase-js'
 
 export default function PerfilCliente() {
   const [loading, setLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [profileData, setProfileData] = useState({
     nome: '',
     sobrenome: '',
@@ -277,7 +278,7 @@ export default function PerfilCliente() {
             <Avatar className="h-32 w-32">
               <AvatarImage src={profileData.foto_perfil} />
               <AvatarFallback className="text-2xl">
-                {profileData.nome ? profileData.nome[0] : <User className="h-12 w-12" />}
+                {profileData.nome ? profileData.nome[0] : <UserIcon className="h-12 w-12" />}
               </AvatarFallback>
             </Avatar>
             <div>
@@ -304,7 +305,7 @@ export default function PerfilCliente() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <User className="h-5 w-5" />
+              <UserIcon className="h-5 w-5" />
               <span>Informações Pessoais</span>
             </CardTitle>
           </CardHeader>

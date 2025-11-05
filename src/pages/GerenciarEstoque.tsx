@@ -227,6 +227,17 @@ export default function GerenciarEstoque() {
         return
       }
       
+      // ✅ Verificar se é admin
+      if (userData.tipo_usuario !== 'admin') {
+        toast({
+          title: "Acesso negado",
+          description: "Você não tem permissão para gerenciar estoque.",
+          variant: "destructive",
+        })
+        navigate('/backoffice')
+        return
+      }
+      
       setUser(userData as User)
     } catch (error) {
       navigate('/login')
