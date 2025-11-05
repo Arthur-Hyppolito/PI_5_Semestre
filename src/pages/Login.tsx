@@ -102,12 +102,12 @@ const Login = () => {
               <Button
                 onClick={() => setLoginType("cliente")}
                 variant="outline"
-                className="w-full h-16 flex items-center justify-center space-x-3 hover:bg-ocean-light/10 hover:border-ocean-medium transition-all"
+                className="w-full h-16 flex items-center justify-center space-x-3 hover:bg-ocean-light/10 hover:border-ocean-medium hover:text-ocean-deep transition-all"
               >
                 <Users className="h-6 w-6 text-ocean-medium" />
                 <div className="text-left">
                   <div className="font-semibold text-lg">Cliente</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground hover:text-ocean-medium transition-colors">
                     Acesso à loja e pedidos
                   </div>
                 </div>
@@ -116,12 +116,12 @@ const Login = () => {
               <Button
                 onClick={() => setLoginType("gerencial")}
                 variant="outline"
-                className="w-full h-16 flex items-center justify-center space-x-3 hover:bg-ocean-light/10 hover:border-ocean-medium transition-all"
+                className="w-full h-16 flex items-center justify-center space-x-3 hover:bg-ocean-light/10 hover:border-ocean-medium hover:text-ocean-deep transition-all"
               >
                 <Shield className="h-6 w-6 text-ocean-medium" />
                 <div className="text-left">
                   <div className="font-semibold text-lg">Área Gerencial</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground hover:text-ocean-medium transition-colors">
                     Painel administrativo
                   </div>
                 </div>
