@@ -28,10 +28,26 @@ const Hero = () => {
             Tudo que você precisa para dominar as ondas.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="ocean" size="lg" className="text-lg px-8 py-4">
+            <Button 
+              variant="ocean" 
+              size="lg" 
+              className="text-lg px-8 py-4"
+              onClick={() => {
+                const element = document.getElementById('produtos');
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
               Ver Produtos
             </Button>
-            <Button variant="wave" size="lg" className="text-lg px-8 py-4">
+            <Button 
+              variant="wave" 
+              size="lg" 
+              className="text-lg px-8 py-4"
+              onClick={() => {
+                const element = document.getElementById('servicos');
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
               Nossos Serviços
             </Button>
           </div>
