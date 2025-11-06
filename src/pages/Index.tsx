@@ -14,6 +14,9 @@ const Index = () => {
         <Products />
         <About />
         <Services />
+        {(
+          <elevenlabs-convai agent-id="agent_2201k9bbskqffm2v7p97hc2zb05x" />
+        ) as any}
       </main>
       <Footer />
     </div>
